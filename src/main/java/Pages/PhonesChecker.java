@@ -1,16 +1,12 @@
 package Pages;
 
-import org.openqa.selenium.WebDriver;
 import java.util.Arrays;
+import org.openqa.selenium.By;
 
 public class PhonesChecker extends BaseCategoryChecker {
-
-    public PhonesChecker(WebDriver driver) {
-        super(driver);
-    }
-
-    public void checkPhones() {
-        checkCategory("Phones", Arrays.asList(
+    public void checkPhonesCategory() {
+        driver.findElement(By.linkText("Phones")).click();
+        verifyCategoryItemsLoaded("Phones", Arrays.asList(
                 "Samsung galaxy s6",
                 "Nokia lumia 1520",
                 "Nexus 6",

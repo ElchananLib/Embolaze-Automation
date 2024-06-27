@@ -1,16 +1,12 @@
 package Pages;
 
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.By; // Import the By class
 import java.util.Arrays;
 
 public class LaptopsChecker extends BaseCategoryChecker {
-
-    public LaptopsChecker(WebDriver driver) {
-        super(driver);
-    }
-
-    public void checkLaptops() {
-        checkCategory("Laptops", Arrays.asList(
+    public void checkLaptopsCategory() {
+        driver.findElement(By.linkText("Laptops")).click();
+        verifyCategoryItemsLoaded("Laptops", Arrays.asList(
                 "Sony vaio i5",
                 "Sony vaio i7",
                 "MacBook air",

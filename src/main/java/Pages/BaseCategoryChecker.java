@@ -9,46 +9,22 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 import java.util.List;
 
-public abstract class BaseCategoryChecker extends TopMenuChecker {
+public class BaseCategoryChecker {
+    protected WebDriver driver;
+    protected WebDriverWait wait;
 
-    public BaseCategoryChecker(WebDriver driver) {
-        super(driver);
+    public BaseCategoryChecker() {
+        this.driver = DriverSingleton.getDriver();
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(WaitTimes.MEDIUM_WAIT.getSeconds()));
     }
 
-    protected void checkCategory(String category, List<String> expectedProducts) {
-        WebElement listGroupDiv = driver.findElement(By.xpath("//div[@class='col-lg-3']//div[@class='list-group']"));
-        WebElement categoryLink = listGroupDiv.findElement(By.xpath(".//a[text()='" + category + "']"));
+    public void verifyCategoryItemsLoaded(String category, List<String> expectedItems) {
+        List<WebElement> items = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.cssSelector("#tbodyid .card-title a")));
+        assert items.size() == expectedItems.size() : "Expected items count does not match for category: " + category;
 
-        categoryLink.click();
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.className("card")));
-
-        List<WebElement> productElements = driver.findElements(By.className("hrefch"));
-
-        boolean allProductsDisplayed = true;
-        for (String product : expectedProducts) {
-            boolean productDisplayed = productElements.stream()
-                    .anyMatch(element -> element.getText().contains(product));
-            if (!productDisplayed) {
-                allProductsDisplayed = false;
-                System.out.println("Product not displayed in " + category + ": " + product);
-            }
-        }
-
-        for (WebElement productElement : productElements) {
-            String productName = productElement.getText();
-            if (!expectedProducts.contains(productName)) {
-                allProductsDisplayed = false;
-                System.out.println("Unexpected product found in " + category + ": " + productName);
-            }
-        }
-
-        System.out.println("Checked category: " + category);
-        System.out.println("Current URL: " + driver.getCurrentUrl());
-
-        if (allProductsDisplayed) {
-            System.out.println("Test Passed: All expected products are displayed in " + category + ", no other products found.");
-        } else {
-            System.out.println("Test Failed: Not all expected products are displayed in " + category + ".");
+        for (WebElement item : items) {
+            String itemName = item.getText();
+            assert expectedItems.contains(itemName) : "Unexpected item found: " + itemName;
         }
     }
 }

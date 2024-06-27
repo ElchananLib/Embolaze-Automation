@@ -1,37 +1,42 @@
 package Pages;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 public class HomePage {
+    private WebDriver driver;
 
-    public HomePage() {
-        System.setProperty("webdriver.chrome.driver", "/home/mefathim/ChromeDriver/chromedriver-linux64/chromedriver");
+    public HomePage(WebDriver driver) {
+        this.driver = driver;
     }
 
-    public static void main(String[] args) {
-        new HomePage();
+    public void openHomePage() {
+        driver.get("https://www.demoblaze.com");
+        WebElement homeLink = driver.findElement(By.id("nava"));
+        assert homeLink.isDisplayed() : "Home link is not displayed";
+    }
 
-        WebDriver driver = new ChromeDriver();
+    public void verifyMenuLinks() {
+        driver.findElement(By.linkText("Home")).click();
+        verifyPageLoad();
 
-        try {
-            driver.manage().window().maximize();
-            driver.get("https://www.demoblaze.com");
+        driver.findElement(By.linkText("Cart")).click();
+        verifyPageLoad();
+    }
 
-            PhonesChecker phonesChecker = new PhonesChecker(driver);
-            phonesChecker.verifyTopMenuLinks();
-            phonesChecker.checkPhones();
+    private void verifyPageLoad() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(WaitTimes.MEDIUM_WAIT.getSeconds()));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("tbodyid")));
+    }
 
-            LaptopsChecker laptopsChecker = new LaptopsChecker(driver);
-            laptopsChecker.verifyTopMenuLinks();
-            laptopsChecker.checkLaptops();
-
-            MonitorsChecker monitorsChecker = new MonitorsChecker(driver);
-            monitorsChecker.verifyTopMenuLinks();
-            monitorsChecker.checkMonitors();
-
-        } finally {
-            driver.quit();
-        }
+    public void checkCategories() {
+        new PhonesChecker().checkPhonesCategory();
+        new MonitorsChecker().checkMonitorsCategory();
+        new LaptopsChecker().checkLaptopsCategory();
     }
 }
